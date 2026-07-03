@@ -6,6 +6,7 @@ import 'package:taskflow/features/tasks/domain/usecases/delete_task_usecase.dart
 import 'package:taskflow/features/tasks/domain/usecases/get_all_tasks_usecase.dart';
 import 'package:taskflow/features/tasks/domain/usecases/save_task_usecase.dart';
 import 'package:taskflow/features/tasks/domain/usecases/update_task_usecase.dart';
+import 'package:taskflow/features/tasks/presentation/controllers/task_controller.dart';
 
 final getIt = GetIt.instance;
 
@@ -33,4 +34,10 @@ Future<void> setupDependencies() async {
     () => UpdateTaskUseCase(repository: getIt()),
   );
   //controller
+  getIt.registerFactory<TaskController>(() => TaskController(
+    saveTaskUseCase: SaveTaskUseCase(repository: getIt()), 
+    updateTaskuseCase: UpdateTaskUseCase(repository: getIt()), 
+    deleteTaskUseCase: DeleteTaskUseCase(repository: getIt()), 
+    getAllTasksUseCase: GetAllTasksUseCase(repository: getIt()),
+    ));
 }
