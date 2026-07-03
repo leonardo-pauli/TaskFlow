@@ -23,14 +23,14 @@ Future<void> setupDependencies() async {
   getIt.registerLazySingleton<SaveTaskUseCase>(
     () => SaveTaskUseCase(repository: getIt()),
   );
-  getIt.registerLazySingleton<DeleteTaskUsecase>(
-    () => DeleteTaskUsecase(repository: getIt()),
+  getIt.registerLazySingleton<DeleteTaskUseCase>(
+    () => DeleteTaskUseCase(repository: getIt()),
   );
-  getIt.registerLazySingleton<GetAllTasksUsecase>(
-    () => GetAllTasksUsecase(repository: getIt()),
+  getIt.registerLazySingleton<GetAllTasksUseCase>(
+    () => GetAllTasksUseCase(repository: getIt()),
   );
-  getIt.registerLazySingleton<UpdateTaskUsecase>(
-    () => UpdateTaskUsecase(repository: getIt()),
+  getIt.registerLazySingleton<UpdateTaskUseCase>(
+    () => UpdateTaskUseCase(repository: getIt()),
   );
   //controller
 }

@@ -1,11 +1,11 @@
 import 'package:taskflow/features/tasks/domain/repositories/itask_repository.dart';
 
-class DeleteTaskUsecase {
+class DeleteTaskUseCase {
   final ITaskRepository repository;
 
-  DeleteTaskUsecase({required this.repository});
+  DeleteTaskUseCase({required this.repository});
 
-  Future<void> call(String id) async{
+  Future<void> call(String id) async {
     await repository.deleteTask(id);
   }
 }
