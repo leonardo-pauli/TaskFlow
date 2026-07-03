@@ -15,25 +15,19 @@ class TaskEntity {
     required this.id,
     required this.priority,
     required this.status,
-    required this.title,
+    required this.title, 
     this.description,
   });
-
-  TaskEntity copyWith({
-    String? id,
-    String? title,
-    String? description,
-    DateTime? createdAt,
-    TaskStatus? status,
-    TaskPriority? priority,
-  }) {
+  
+  TaskEntity copyWith({String? id, String? title, String? description,
+  DateTime? createdAt, TaskStatus? status, TaskPriority? priority}){
     return TaskEntity(
-      createdAt: createdAt ?? this.createdAt,
-      description: description ?? this.description,
-      id: id ?? this.id,
-      priority: priority ?? this.priority,
-      status: status ?? this.status,
+      createdAt: createdAt ?? this.createdAt, 
+      description: description ?? this.description, 
+      id: id ?? this.id, 
+      priority: priority ?? this.priority, 
+      status: status ?? this.status, 
       title: title ?? this.title,
-    );
+      );  
   }
 }
