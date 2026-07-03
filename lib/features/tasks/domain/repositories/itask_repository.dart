@@ -1,4 +1,4 @@
-import 'package:taskflow/features/tasks/domain/entity/task_entity.dart';
+import 'package:taskflow/domain/task_entity.dart';
 
 abstract class ITaskRepository {
   Future<List<TaskEntity>> getAllTasks();
