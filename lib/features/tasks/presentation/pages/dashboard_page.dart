@@ -46,9 +46,9 @@ class _DashboardPageState extends State<DashboardPage> {
                     ],),
                     Expanded(child: TabBarView(
                       children: [
-                        TaskListWidget(tasks: controller.tasks.where((task) => task.status == TaskStatus.todo).toList()),
-                       TaskListWidget(tasks: controller.tasks.where((task) => task.status == TaskStatus.doing).toList()),
-                        TaskListWidget(tasks: controller.tasks.where((task) => task.status == TaskStatus.done).toList()),
+                        TaskListWidget(tasks: controller.tasks.where((task) => task.status == TaskStatus.todo).toList(), onDelete: (id) => controller.deleteTask(id),),
+                       TaskListWidget(tasks: controller.tasks.where((task) => task.status == TaskStatus.doing).toList(), onDelete: (id) => controller.deleteTask(id),),
+                        TaskListWidget(tasks: controller.tasks.where((task) => task.status == TaskStatus.done).toList(), onDelete: (id) => controller.deleteTask(id),),
                       ]
                       ),)
                 ],

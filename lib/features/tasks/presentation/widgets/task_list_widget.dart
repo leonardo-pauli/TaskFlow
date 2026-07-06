@@ -4,8 +4,9 @@ import 'package:taskflow/domain/task_entity.dart';
 
 class TaskListWidget extends StatelessWidget {
 final List<TaskEntity> tasks;
+final Function(String) onDelete;
 
-  const TaskListWidget({super.key, required this.tasks});
+  const TaskListWidget({super.key, required this.tasks, required this.onDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +19,10 @@ final List<TaskEntity> tasks;
         return ListTile(
           title: Text(task.title),
           subtitle: Text(task.description),
-          trailing: Icon(Icons.delete, color: Colors.red),
+          trailing: IconButton(
+            onPressed: () => onDelete(task.id),
+            icon:  Icon(Icons.delete, color: Colors.red),
+           ),
           leading: CircleAvatar(child: Text(task.priority.name[0].toUpperCase())),
         );
       },
