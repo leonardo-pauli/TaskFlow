@@ -1,6 +1,6 @@
 enum TaskStatus { todo, doing, done }
 
-enum TaskPriority { urgent, important, normal }
+enum TaskPriority { urgent, important, medium }
 
 class TaskEntity {
   final String id;

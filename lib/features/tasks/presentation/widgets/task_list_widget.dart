@@ -23,7 +23,8 @@ final Function(String) onDelete;
             onPressed: () => onDelete(task.id),
             icon:  Icon(Icons.delete, color: Colors.red),
            ),
-          leading: CircleAvatar(child: Text(task.priority.name[0].toUpperCase())),
+          leading: CircleAvatar(
+            child: Text(task.priority.name[0].toUpperCase())),
         );
       },
       itemCount: tasks.length,

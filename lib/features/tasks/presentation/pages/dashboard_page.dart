@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:taskflow/core/di/injection_container.dart';
 import 'package:taskflow/domain/task_entity.dart';
 import 'package:taskflow/features/tasks/presentation/controllers/task_controller.dart';
+import 'package:taskflow/features/tasks/presentation/widgets/add_task_form_widget.dart';
 import 'package:taskflow/features/tasks/presentation/widgets/task_list_widget.dart';
 import 'package:taskflow/features/tasks/presentation/widgets/task_summary_card.dart';
 
@@ -26,6 +27,7 @@ class _DashboardPageState extends State<DashboardPage> {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
+        
         appBar: AppBar(title: Text('TaskFlow')),
         body: ListenableBuilder(
           listenable: controller,
@@ -56,6 +58,22 @@ class _DashboardPageState extends State<DashboardPage> {
             );
           },
         ),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: (){
+            showModalBottomSheet(
+              isScrollControlled: true,
+              context: context, 
+              builder: (context){
+                return Padding(
+                  padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom),
+                child: SizedBox(
+                  height: 300,
+                  child: AddTaskFormWidget(onSave: (task) => controller.addTask(task)),
+                ),);
+              });
+          }),
       ),
     );
   }
