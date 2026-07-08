@@ -1,11 +1,11 @@
 enum TaskStatus { todo, doing, done }
 
-enum TaskPriority { urgent, important, normal }
+enum TaskPriority { urgent, important, medium }
 
 class TaskEntity {
   final String id;
   final String title;
-  final String? description;
+  final String description;
   final DateTime createdAt;
   final TaskStatus status;
   final TaskPriority priority;
@@ -16,7 +16,7 @@ class TaskEntity {
     required this.priority,
     required this.status,
     required this.title,
-    this.description,
+    required this.description,
   });
 
   TaskEntity copyWith({
