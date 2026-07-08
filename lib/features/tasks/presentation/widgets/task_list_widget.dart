@@ -6,12 +6,14 @@ class TaskListWidget extends StatelessWidget {
   final List<TaskEntity> tasks;
   final Function(String) onDelete;
   final Function(TaskEntity) onEdit;
+  final Function(TaskEntity, TaskStatus) onChangeStatus;
 
   const TaskListWidget({
     super.key,
     required this.tasks,
-    required this.onDelete, 
+    required this.onDelete,
     required this.onEdit,
+    required this.onChangeStatus,
   });
 
   @override
@@ -35,11 +37,11 @@ class TaskListWidget extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: const Icon(Icons.delete, color: Colors.white),
           ),
-          confirmDismiss: (direction) async{
-            if(direction == DismissDirection.endToStart){
+          confirmDismiss: (direction) async {
+            if (direction == DismissDirection.endToStart) {
               onDelete(task.id);
               return true;
-            }else if (direction == DismissDirection.startToEnd){
+            } else if (direction == DismissDirection.startToEnd) {
               onEdit(task);
               return false;
             }
@@ -49,7 +51,28 @@ class TaskListWidget extends StatelessWidget {
           child: ListTile(
             title: Text(task.title),
             subtitle: Text(task.description),
-
+            trailing: PopupMenuButton<TaskStatus>(
+              icon: Icon(Icons.swap_horiz, color: Colors.grey),
+              onSelected: (novoStatus) {
+                if (novoStatus != task.status) {
+                  onChangeStatus(task, novoStatus);
+                }
+              },
+              itemBuilder: (context) => [
+                const PopupMenuItem(
+                  value: TaskStatus.todo,
+                  child: Text('A Fazer'),
+                ),
+                const PopupMenuItem(
+                  value: TaskStatus.doing,
+                  child: Text('Fazendo'),
+                ),
+                const PopupMenuItem(
+                  value: TaskStatus.done,
+                  child: Text('Concluído'),
+                ),
+              ],
+            ),
             leading: CircleAvatar(
               child: Text(task.priority.name[0].toUpperCase()),
             ),

@@ -42,6 +42,19 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
+void _onChangeStatus(taskAtual, novoStatus){
+final tarefaAtualizada = TaskEntity(
+  createdAt: taskAtual.createdAt, 
+  id: taskAtual.id, 
+  priority: taskAtual.priority, 
+  status: novoStatus, 
+  title: taskAtual.title, 
+  description: taskAtual.description,
+  );
+
+  controller.updateTask(tarefaAtualizada);
+}
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -80,6 +93,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     .toList(),
                                 onDelete: (id) => controller.deleteTask(id),
                                 onEdit: _showEditModal,
+                                onChangeStatus: _onChangeStatus,
                               ),
                               TaskListWidget(
                                 tasks: controller.tasks
@@ -88,7 +102,8 @@ class _DashboardPageState extends State<DashboardPage> {
                                     )
                                     .toList(),
                                 onDelete: (id) => controller.deleteTask(id),
-                                onEdit: _showEditModal,
+                                onEdit: _showEditModal, 
+                                onChangeStatus: _onChangeStatus,
                               ),
                               TaskListWidget(
                                 tasks: controller.tasks
@@ -97,7 +112,8 @@ class _DashboardPageState extends State<DashboardPage> {
                                     )
                                     .toList(),
                                 onDelete: (id) => controller.deleteTask(id),
-                                onEdit: _showEditModal,
+                                onEdit: _showEditModal, 
+                                onChangeStatus: _onChangeStatus,
                               ),
                             ],
                           ),
