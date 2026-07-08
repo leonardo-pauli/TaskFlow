@@ -35,9 +35,9 @@ Future<void> setupDependencies() async {
   );
   //controller
   getIt.registerFactory<TaskController>(() => TaskController(
-    saveTaskUseCase: SaveTaskUseCase(repository: getIt()), 
-    updateTaskuseCase: UpdateTaskUseCase(repository: getIt()), 
-    deleteTaskUseCase: DeleteTaskUseCase(repository: getIt()), 
-    getAllTasksUseCase: GetAllTasksUseCase(repository: getIt()),
+    saveTaskUseCase:getIt(), 
+    updateTaskuseCase: getIt(), 
+    deleteTaskUseCase: getIt(), 
+    getAllTasksUseCase: getIt(),
     ));
 }
