@@ -22,58 +22,113 @@ class _DashboardPageState extends State<DashboardPage> {
     controller.loadTasks();
   }
 
+  void _showEditModal(TaskEntity task) {
+    showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: AddTaskFormWidget(
+            taskToEdit: task,
+            onSave: (updateTask) {
+              controller.updateTask(updateTask);
+            },
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
-        
         appBar: AppBar(title: Text('TaskFlow')),
         body: ListenableBuilder(
           listenable: controller,
           builder: (_, widget) {
-            return controller.isLoading ?  
-            Center(child: CircularProgressIndicator()) :
-            Center(
-              child: Column(
-                children: [
-                  TaskSummaryCard(
-                    totalTasks: controller.tasks.length, 
-                    completedTasks: controller.tasks.where((task) => task.status == TaskStatus.done).length,
-                    ),
-                    TabBar(tabs: [
-                      Tab(text: 'A Fazer'),
-                      Tab(text: 'Fazendo'),
-                      Tab(text: 'Completo'),
-                    ],),
-                    Expanded(child: TabBarView(
+            return controller.isLoading
+                ? Center(child: CircularProgressIndicator())
+                : Center(
+                    child: Column(
                       children: [
-                        TaskListWidget(tasks: controller.tasks.where((task) => task.status == TaskStatus.todo).toList(), onDelete: (id) => controller.deleteTask(id),),
-                       TaskListWidget(tasks: controller.tasks.where((task) => task.status == TaskStatus.doing).toList(), onDelete: (id) => controller.deleteTask(id),),
-                        TaskListWidget(tasks: controller.tasks.where((task) => task.status == TaskStatus.done).toList(), onDelete: (id) => controller.deleteTask(id),),
-                      ]
-                      ),)
-                ],
-              )
-            );
+                        TaskSummaryCard(
+                          totalTasks: controller.tasks.length,
+                          completedTasks: controller.tasks
+                              .where((task) => task.status == TaskStatus.done)
+                              .length,
+                        ),
+                        TabBar(
+                          tabs: [
+                            Tab(text: 'A Fazer'),
+                            Tab(text: 'Fazendo'),
+                            Tab(text: 'Completo'),
+                          ],
+                        ),
+                        Expanded(
+                          child: TabBarView(
+                            children: [
+                              TaskListWidget(
+                                tasks: controller.tasks
+                                    .where(
+                                      (task) => task.status == TaskStatus.todo,
+                                    )
+                                    .toList(),
+                                onDelete: (id) => controller.deleteTask(id),
+                                onEdit: _showEditModal,
+                              ),
+                              TaskListWidget(
+                                tasks: controller.tasks
+                                    .where(
+                                      (task) => task.status == TaskStatus.doing,
+                                    )
+                                    .toList(),
+                                onDelete: (id) => controller.deleteTask(id),
+                                onEdit: _showEditModal,
+                              ),
+                              TaskListWidget(
+                                tasks: controller.tasks
+                                    .where(
+                                      (task) => task.status == TaskStatus.done,
+                                    )
+                                    .toList(),
+                                onDelete: (id) => controller.deleteTask(id),
+                                onEdit: _showEditModal,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
           },
         ),
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
-          onPressed: (){
+          onPressed: () {
             showModalBottomSheet(
               isScrollControlled: true,
-              context: context, 
-              builder: (context){
+              context: context,
+              builder: (context) {
                 return Padding(
                   padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom),
-                child: SizedBox(
-                  height: 300,
-                  child: AddTaskFormWidget(onSave: (task) => controller.addTask(task)),
-                ),);
-              });
-          }),
+                    bottom: MediaQuery.of(context).viewInsets.bottom,
+                  ),
+                  child: SizedBox(
+                    height: 300,
+                    child: AddTaskFormWidget(
+                      onSave: (task) => controller.addTask(task),
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }

@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:taskflow/domain/task_entity.dart';
 
 class AddTaskFormWidget extends StatefulWidget {
+  final TaskEntity? taskToEdit;
   final Function(TaskEntity) onSave;
 
-  const AddTaskFormWidget({super.key, required this.onSave});
+  const AddTaskFormWidget({super.key, required this.onSave, this.taskToEdit});
 
   @override
   State<AddTaskFormWidget> createState() => _AddTaskFormWidgetState();
@@ -14,6 +15,17 @@ class _AddTaskFormWidgetState extends State<AddTaskFormWidget> {
   TaskPriority _selectedPriority = TaskPriority.medium;
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
+
+@override
+  void initState() {
+    super.initState();
+    if(widget.taskToEdit != null){
+      _titleController.text = widget.taskToEdit!.title;
+      _descriptionController.text = widget.taskToEdit!.description;
+      _selectedPriority = widget.taskToEdit!.priority;
+    }
+
+  }
 
   @override
   void dispose() {
@@ -25,8 +37,6 @@ class _AddTaskFormWidgetState extends State<AddTaskFormWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-
     return Padding(
       padding: EdgeInsets.all(16),
       child: SingleChildScrollView(
@@ -67,10 +77,10 @@ class _AddTaskFormWidgetState extends State<AddTaskFormWidget> {
                 if (_titleController.text.isEmpty) return;
 
                 final newTask = TaskEntity(
-                  createdAt: DateTime.now(),
-                  id: DateTime.now().millisecondsSinceEpoch.toString(),
+                  createdAt: widget.taskToEdit != null ? widget.taskToEdit!.createdAt : DateTime.now(),
+                  id: widget.taskToEdit != null ? widget.taskToEdit!.id : DateTime.now().millisecondsSinceEpoch.toString(),
                   priority: _selectedPriority,
-                  status: TaskStatus.todo,
+                  status: widget.taskToEdit != null ? widget.taskToEdit!.status :  TaskStatus.todo,
                   title: _titleController.text,
                   description: _descriptionController.text,
                 );
