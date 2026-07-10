@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:taskflow/core/di/injection_container.dart';
 import 'package:taskflow/domain/task_entity.dart';
+import 'package:taskflow/features/settings/presentation/pages/settings_page.dart';
 import 'package:taskflow/features/tasks/presentation/controllers/task_controller.dart';
 import 'package:taskflow/features/tasks/presentation/widgets/add_task_form_widget.dart';
 import 'package:taskflow/features/tasks/presentation/widgets/task_list_widget.dart';
@@ -60,7 +61,20 @@ class _DashboardPageState extends State<DashboardPage> {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
-        appBar: AppBar(title: Text('TaskFlow')),
+        appBar: AppBar(
+          title: Text('TaskFlow'),
+          actions: [
+            IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SettingsPage()),
+                );
+              },
+              icon: Icon(Icons.settings),
+            ),
+          ],
+        ),
         body: ListenableBuilder(
           listenable: controller,
           builder: (_, widget) {
@@ -81,8 +95,7 @@ class _DashboardPageState extends State<DashboardPage> {
                             vertical: 8.0,
                           ),
                           child: TextField(
-                            onChanged: controller
-                                .setSearchQuery, 
+                            onChanged: controller.setSearchQuery,
                             decoration: InputDecoration(
                               hintText: 'Buscar tarefas...',
                               prefixIcon: const Icon(
@@ -92,13 +105,10 @@ class _DashboardPageState extends State<DashboardPage> {
                               filled: true,
                               fillColor: Colors.deepPurple.withValues(
                                 alpha: 0.05,
-                              ), 
+                              ),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(
-                                  12,
-                                ),
-                                borderSide:
-                                    BorderSide.none, 
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
                               ),
                             ),
                           ),
