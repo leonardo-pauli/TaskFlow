@@ -42,18 +42,18 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-void _onChangeStatus(taskAtual, novoStatus){
-final tarefaAtualizada = TaskEntity(
-  createdAt: taskAtual.createdAt, 
-  id: taskAtual.id, 
-  priority: taskAtual.priority, 
-  status: novoStatus, 
-  title: taskAtual.title, 
-  description: taskAtual.description,
-  );
+  void _onChangeStatus(taskAtual, novoStatus) {
+    final tarefaAtualizada = TaskEntity(
+      createdAt: taskAtual.createdAt,
+      id: taskAtual.id,
+      priority: taskAtual.priority,
+      status: novoStatus,
+      title: taskAtual.title,
+      description: taskAtual.description,
+    );
 
-  controller.updateTask(tarefaAtualizada);
-}
+    controller.updateTask(tarefaAtualizada);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,6 +74,34 @@ final tarefaAtualizada = TaskEntity(
                           completedTasks: controller.tasks
                               .where((task) => task.status == TaskStatus.done)
                               .length,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                            vertical: 8.0,
+                          ),
+                          child: TextField(
+                            onChanged: controller
+                                .setSearchQuery, 
+                            decoration: InputDecoration(
+                              hintText: 'Buscar tarefas...',
+                              prefixIcon: const Icon(
+                                Icons.search,
+                                color: Colors.deepPurple,
+                              ),
+                              filled: true,
+                              fillColor: Colors.deepPurple.withValues(
+                                alpha: 0.05,
+                              ), 
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(
+                                  12,
+                                ),
+                                borderSide:
+                                    BorderSide.none, 
+                              ),
+                            ),
+                          ),
                         ),
                         TabBar(
                           tabs: [
@@ -102,7 +130,7 @@ final tarefaAtualizada = TaskEntity(
                                     )
                                     .toList(),
                                 onDelete: (id) => controller.deleteTask(id),
-                                onEdit: _showEditModal, 
+                                onEdit: _showEditModal,
                                 onChangeStatus: _onChangeStatus,
                               ),
                               TaskListWidget(
@@ -112,7 +140,7 @@ final tarefaAtualizada = TaskEntity(
                                     )
                                     .toList(),
                                 onDelete: (id) => controller.deleteTask(id),
-                                onEdit: _showEditModal, 
+                                onEdit: _showEditModal,
                                 onChangeStatus: _onChangeStatus,
                               ),
                             ],
