@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:taskflow/core/di/injection_container.dart';
 import 'package:taskflow/core/theme/theme_controller.dart';
+import 'package:taskflow/features/pomodoro/presentation/pages/pomodoro_page.dart';
 import 'package:taskflow/features/tasks/presentation/pages/dashboard_page.dart';
 
 Future<void> main() async {
@@ -33,7 +34,7 @@ class MyApp extends StatelessWidget {
               brightness: Brightness.dark,
             ),
           ),
-          home: DashboardPage(),
+          home: PomodoroPage(),
         );
       },
     );
