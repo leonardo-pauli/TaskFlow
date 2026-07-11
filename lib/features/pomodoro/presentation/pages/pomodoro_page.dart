@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:taskflow/core/di/injection_container.dart';
+import 'package:taskflow/domain/task_entity.dart';
 import 'package:taskflow/features/pomodoro/presentation/controllers/pomodoro_controller.dart';
 
 class PomodoroPage extends StatelessWidget {
-  const PomodoroPage({super.key});
+  final TaskEntity? initialTask;
+
+  const PomodoroPage({super.key, this.initialTask});
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +14,15 @@ class PomodoroPage extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
+    // Vincular a tarefa ao iniciar a página
+    if (initialTask != null && controller.currentTask?.id != initialTask!.id) {
+      controller.setCurrentTask(initialTask);
+    }
+
     return Scaffold(
+      appBar: AppBar(
+        title: Text("Pomodoro"),
+      ),
       backgroundColor: colorScheme.surface,
       body: SafeArea(
         child: Center(
@@ -45,6 +56,78 @@ class PomodoroPage extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  // Tarefa vinculada
+                  ListenableBuilder(
+                    listenable: controller,
+                    builder: (context, child) {
+                      if (controller.currentTask != null) {
+                        return Container(
+                          width: double.infinity,
+                          margin: const EdgeInsets.only(bottom: 18),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          decoration: BoxDecoration(
+                            color: colorScheme.primaryContainer.withValues(alpha: 0.4),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: colorScheme.primary.withValues(alpha: 0.2),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.task_alt_rounded,
+                                size: 20,
+                                color: colorScheme.primary,
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Focando em',
+                                      style: textTheme.labelSmall?.copyWith(
+                                        color: colorScheme.onSurfaceVariant,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      controller.currentTask!.title,
+                                      style: textTheme.titleSmall?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                        color: colorScheme.onPrimaryContainer,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              IconButton(
+                                onPressed: () => controller.setCurrentTask(null),
+                                icon: Icon(
+                                  Icons.close_rounded,
+                                  size: 18,
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                                tooltip: 'Desvincular tarefa',
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(
+                                  minWidth: 32,
+                                  minHeight: 32,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  ),
+
                   ListenableBuilder(
                     listenable: controller,
                     builder: (context, child) {
@@ -168,4 +251,4 @@ class PomodoroPage extends StatelessWidget {
       ),
     );
   }
-}
+}

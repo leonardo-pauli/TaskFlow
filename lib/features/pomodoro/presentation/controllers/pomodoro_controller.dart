@@ -1,9 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
+import 'package:taskflow/domain/task_entity.dart';
 
 class PomodoroController extends ChangeNotifier{
   Timer? _timer;
+  TaskEntity? _currentTask;
+  TaskEntity? get currentTask => _currentTask;
 
   static const int focusTime = 2 * 60;
   static const int breakTime = 1 * 60;
@@ -20,6 +23,11 @@ class PomodoroController extends ChangeNotifier{
   final minutes = _remainingSeconds ~/ 60;
   final seconds = _remainingSeconds % 60;
   return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+  }
+
+  void setCurrentTask(TaskEntity? task) {
+    _currentTask = task;
+    notifyListeners();
   }
 
   void startTimer() {

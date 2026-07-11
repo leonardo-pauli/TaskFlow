@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:taskflow/core/di/injection_container.dart';
 import 'package:taskflow/domain/task_entity.dart';
+import 'package:taskflow/features/pomodoro/presentation/pages/pomodoro_page.dart';
 import 'package:taskflow/features/settings/presentation/pages/settings_page.dart';
 import 'package:taskflow/features/tasks/presentation/controllers/task_controller.dart';
 import 'package:taskflow/features/tasks/presentation/widgets/add_task_form_widget.dart';
@@ -64,6 +65,15 @@ class _DashboardPageState extends State<DashboardPage> {
         appBar: AppBar(
           title: Text('TaskFlow'),
           actions: [
+             IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const PomodoroPage()),
+                );
+              },
+              icon: Icon(Icons.timer),
+            ),
             IconButton(
               onPressed: () {
                 Navigator.push(
