@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:taskflow/core/di/injection_container.dart';
 import 'package:taskflow/core/theme/theme_controller.dart';
 import 'package:taskflow/features/tasks/presentation/pages/dashboard_page.dart';
@@ -23,10 +24,16 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           themeMode: themeController.themeMode,
           theme: ThemeData(
+            textTheme: GoogleFonts.poppinsTextTheme(
+              ThemeData.light().textTheme,
+            ),
             useMaterial3: true,
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           ),
           darkTheme: ThemeData(
+            textTheme: GoogleFonts.poppinsTextTheme(
+              ThemeData.dark().textTheme,
+            ),
             useMaterial3: true,
             colorScheme: ColorScheme.fromSeed(
               seedColor: Colors.deepPurple,
