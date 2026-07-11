@@ -2,11 +2,130 @@ import 'package:flutter/material.dart';
 import 'package:taskflow/core/di/injection_container.dart';
 import 'package:taskflow/domain/task_entity.dart';
 import 'package:taskflow/features/pomodoro/presentation/controllers/pomodoro_controller.dart';
+import 'package:taskflow/features/tasks/presentation/controllers/task_controller.dart';
 
 class PomodoroPage extends StatelessWidget {
   final TaskEntity? initialTask;
 
   const PomodoroPage({super.key, this.initialTask});
+
+  void _showTaskPicker(BuildContext context, PomodoroController controller) {
+    final taskController = getIt<TaskController>();
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.55,
+          minChildSize: 0.3,
+          maxChildSize: 0.85,
+          expand: false,
+          builder: (context, scrollController) {
+            return ListenableBuilder(
+              listenable: taskController,
+              builder: (context, _) {
+                final tasks = taskController.tasks
+                    .where((t) => t.status != TaskStatus.done)
+                    .toList();
+
+                return Column(
+                  children: [
+                    // Handle bar
+                    Container(
+                      margin: const EdgeInsets.only(top: 12, bottom: 4),
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.playlist_add_check_rounded,
+                            color: colorScheme.primary,
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            'Escolher Tarefa',
+                            style: textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Divider(height: 1, color: colorScheme.outlineVariant.withValues(alpha: 0.3)),
+                    if (tasks.isEmpty)
+                      Expanded(
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.inbox_rounded,
+                                size: 48,
+                                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                'Nenhuma tarefa pendente',
+                                style: textTheme.bodyLarge?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Crie uma tarefa primeiro no dashboard',
+                                style: textTheme.bodySmall?.copyWith(
+                                  color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    else
+                      Expanded(
+                        child: ListView.separated(
+                          controller: scrollController,
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          itemCount: tasks.length,
+                          separatorBuilder: (_, __) => Divider(
+                            height: 1,
+                            indent: 60,
+                            color: colorScheme.outlineVariant.withValues(alpha: 0.2),
+                          ),
+                          itemBuilder: (context, index) {
+                            final task = tasks[index];
+                            return _TaskPickerItem(
+                              task: task,
+                              onTap: () {
+                                controller.setCurrentTask(task);
+                                Navigator.pop(context);
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                  ],
+                );
+              },
+            );
+          },
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,14 +139,15 @@ class PomodoroPage extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Pomodoro"),
-      ),
+      appBar: AppBar(title: Text("Pomodoro")),
       backgroundColor: colorScheme.surface,
       body: SafeArea(
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 24.0,
+              vertical: 32.0,
+            ),
             child: Container(
               width: double.infinity,
               constraints: const BoxConstraints(maxWidth: 420),
@@ -56,7 +176,7 @@ class PomodoroPage extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Tarefa vinculada
+                  // Tarefa vinculada ou botão de selecionar
                   ListenableBuilder(
                     listenable: controller,
                     builder: (context, child) {
@@ -69,7 +189,9 @@ class PomodoroPage extends StatelessWidget {
                             vertical: 12,
                           ),
                           decoration: BoxDecoration(
-                            color: colorScheme.primaryContainer.withValues(alpha: 0.4),
+                            color: colorScheme.primaryContainer.withValues(
+                              alpha: 0.4,
+                            ),
                             borderRadius: BorderRadius.circular(14),
                             border: Border.all(
                               color: colorScheme.primary.withValues(alpha: 0.2),
@@ -107,7 +229,8 @@ class PomodoroPage extends StatelessWidget {
                                 ),
                               ),
                               IconButton(
-                                onPressed: () => controller.setCurrentTask(null),
+                                onPressed: () =>
+                                    controller.setCurrentTask(null),
                                 icon: Icon(
                                   Icons.close_rounded,
                                   size: 18,
@@ -124,7 +247,69 @@ class PomodoroPage extends StatelessWidget {
                           ),
                         );
                       }
-                      return const SizedBox.shrink();
+
+                      // Sem tarefa vinculada — botão para escolher
+                      return GestureDetector(
+                        onTap: () => _showTaskPicker(context, controller),
+                        child: Container(
+                          width: double.infinity,
+                          margin: const EdgeInsets.only(bottom: 18),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                          decoration: BoxDecoration(
+                            color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: colorScheme.outlineVariant.withValues(alpha: 0.4),
+                              style: BorderStyle.solid,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: colorScheme.primary.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Icon(
+                                  Icons.add_task_rounded,
+                                  size: 20,
+                                  color: colorScheme.primary,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Nenhuma tarefa vinculada',
+                                      style: textTheme.labelSmall?.copyWith(
+                                        color: colorScheme.onSurfaceVariant,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      'Toque para escolher uma tarefa',
+                                      style: textTheme.titleSmall?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                        color: colorScheme.primary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Icon(
+                                Icons.chevron_right_rounded,
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
                     },
                   ),
 
@@ -168,7 +353,8 @@ class PomodoroPage extends StatelessWidget {
                         final int tempoTotal = controller.isFocusMode
                             ? PomodoroController.focusTime
                             : PomodoroController.breakTime;
-                        final double progress = controller.remainingSeconds / tempoTotal;
+                        final double progress =
+                            controller.remainingSeconds / tempoTotal;
 
                         return TweenAnimationBuilder<double>(
                           tween: Tween<double>(begin: 1.0, end: progress),
@@ -181,8 +367,11 @@ class PomodoroPage extends StatelessWidget {
                                 CircularProgressIndicator(
                                   value: animatedValue,
                                   strokeWidth: 10.0,
-                                  backgroundColor: colorScheme.primary.withValues(alpha: 0.15),
-                                  valueColor: AlwaysStoppedAnimation(colorScheme.primary),
+                                  backgroundColor: colorScheme.primary
+                                      .withValues(alpha: 0.15),
+                                  valueColor: AlwaysStoppedAnimation(
+                                    colorScheme.primary,
+                                  ),
                                 ),
                                 Center(
                                   child: Column(
@@ -198,7 +387,9 @@ class PomodoroPage extends StatelessWidget {
                                       ),
                                       const SizedBox(height: 6),
                                       Text(
-                                        controller.isRunning ? 'Em andamento' : 'Pausado',
+                                        controller.isRunning
+                                            ? 'Em andamento'
+                                            : 'Pausado',
                                         style: textTheme.bodyMedium?.copyWith(
                                           color: colorScheme.onSurfaceVariant,
                                         ),
@@ -251,4 +442,120 @@ class PomodoroPage extends StatelessWidget {
       ),
     );
   }
-}
+}
+
+/// Widget de item individual no seletor de tarefas
+class _TaskPickerItem extends StatelessWidget {
+  final TaskEntity task;
+  final VoidCallback onTap;
+
+  const _TaskPickerItem({required this.task, required this.onTap});
+
+  String _priorityLabel(TaskPriority priority) {
+    switch (priority) {
+      case TaskPriority.urgent:
+        return 'Urgente';
+      case TaskPriority.important:
+        return 'Importante';
+      case TaskPriority.medium:
+        return 'Média';
+    }
+  }
+
+  Color _priorityColor(TaskPriority priority, ColorScheme colorScheme) {
+    switch (priority) {
+      case TaskPriority.urgent:
+        return colorScheme.error;
+      case TaskPriority.important:
+        return Colors.orange;
+      case TaskPriority.medium:
+        return colorScheme.primary;
+    }
+  }
+
+  String _statusLabel(TaskStatus status) {
+    switch (status) {
+      case TaskStatus.todo:
+        return 'A Fazer';
+      case TaskStatus.doing:
+        return 'Fazendo';
+      case TaskStatus.done:
+        return 'Concluído';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final pColor = _priorityColor(task.priority, colorScheme);
+
+    return ListTile(
+      onTap: onTap,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+      leading: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: pColor.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Center(
+          child: Text(
+            task.title.isNotEmpty ? task.title[0].toUpperCase() : '?',
+            style: textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: pColor,
+            ),
+          ),
+        ),
+      ),
+      title: Text(
+        task.title,
+        style: textTheme.bodyLarge?.copyWith(
+          fontWeight: FontWeight.w600,
+        ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      subtitle: Row(
+        children: [
+          Container(
+            margin: const EdgeInsets.only(top: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              color: pColor.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Text(
+              _priorityLabel(task.priority),
+              style: textTheme.labelSmall?.copyWith(
+                color: pColor,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          const SizedBox(width: 6),
+          Container(
+            margin: const EdgeInsets.only(top: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Text(
+              _statusLabel(task.status),
+              style: textTheme.labelSmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ],
+      ),
+      trailing: Icon(
+        Icons.play_circle_outline_rounded,
+        color: colorScheme.primary,
+      ),
+    );
+  }
+}
