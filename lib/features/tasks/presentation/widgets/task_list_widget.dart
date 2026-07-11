@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:taskflow/domain/task_entity.dart';
+import 'package:taskflow/features/tasks/presentation/pages/task_detail_page.dart';
 
 class TaskListWidget extends StatelessWidget {
   final List<TaskEntity> tasks;
@@ -49,6 +50,14 @@ class TaskListWidget extends StatelessWidget {
           },
           key: ValueKey(task.id),
           child: ListTile(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TaskDetailPage(task: task),
+                ),
+              );
+            },
             title: Text(task.title),
             subtitle: Text(task.description),
             trailing: PopupMenuButton<TaskStatus>(
