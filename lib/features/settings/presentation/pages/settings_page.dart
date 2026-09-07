@@ -9,7 +9,7 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeController = getIt<ThemeController>();
     return Scaffold(
-      appBar: AppBar(title: Text('Configuracoes')),
+      appBar: AppBar(title: const Text('Configuracoes')),
       body: ListenableBuilder(
         listenable: themeController,
         builder: (context, _) {

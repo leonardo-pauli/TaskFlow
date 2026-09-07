@@ -117,7 +117,7 @@ class PomodoroPage extends StatelessWidget {
                           controller: scrollController,
                           padding: const EdgeInsets.symmetric(vertical: 8),
                           itemCount: tasks.length,
-                          separatorBuilder: (_, __) => Divider(
+                          separatorBuilder: (_, _) => Divider(
                             height: 1,
                             indent: 60,
                             color: colorScheme.outlineVariant.withValues(alpha: 0.2),
