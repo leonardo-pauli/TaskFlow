@@ -15,7 +15,7 @@ class TaskSummaryCard extends StatelessWidget {
     final double progress = totalTasks == 0 ? 0.0 : completedTasks / totalTasks;
     return Card(
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Row(
           children: [
             Expanded(
@@ -23,10 +23,10 @@ class TaskSummaryCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Resumo do dia'),
-                  SizedBox(height: 22),
+                  const Text('Resumo do dia'),
+                  const SizedBox(height: 22),
                   Text('Total de tarefas: $totalTasks'),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text('Tarefas completadas: $completedTasks'),
                 ],
               ),
