@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:taskflow/core/di/injection_container.dart';
 import 'package:taskflow/domain/task_entity.dart';
 import 'package:taskflow/features/pomodoro/presentation/controllers/pomodoro_controller.dart';
@@ -8,6 +9,22 @@ class PomodoroPage extends StatelessWidget {
   final TaskEntity? initialTask;
 
   const PomodoroPage({super.key, this.initialTask});
+  void _showStatusSnackBar(
+    BuildContext context, {
+    required bool success,
+    required String message,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: success ? Colors.green.shade600 : colorScheme.error,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
 
   void _showTaskPicker(BuildContext context, PomodoroController controller) {
     final taskController = getIt<TaskController>();
@@ -216,14 +233,40 @@ class PomodoroPage extends StatelessWidget {
                                       ),
                                     ),
                                     const SizedBox(height: 2),
-                                    Text(
-                                      controller.currentTask!.title,
-                                      style: textTheme.titleSmall?.copyWith(
-                                        fontWeight: FontWeight.w600,
-                                        color: colorScheme.onPrimaryContainer,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
+                                    Row(
+                                      children: [
+                                        Flexible(
+                                          child: Text(
+                                            controller.currentTask!.title,
+                                            style: textTheme.titleSmall?.copyWith(
+                                              fontWeight: FontWeight.w600,
+                                              color: colorScheme.onPrimaryContainer,
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                        if (controller.completedCycles > 0) ...[
+                                          const SizedBox(width: 8),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                              vertical: 2,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: colorScheme.tertiary.withValues(alpha: 0.15),
+                                              borderRadius: BorderRadius.circular(8),
+                                            ),
+                                            child: Text(
+                                              '🍅 x${controller.completedCycles}',
+                                              style: textTheme.labelSmall?.copyWith(
+                                                fontWeight: FontWeight.w700,
+                                                color: colorScheme.tertiary,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ],
                                     ),
                                   ],
                                 ),
@@ -433,6 +476,133 @@ class PomodoroPage extends StatelessWidget {
                         ),
                       ),
                     ],
+                  ),
+
+                  // === Ações da Tarefa ===
+                  ListenableBuilder(
+                    listenable: controller,
+                    builder: (context, _) {
+                      final task = controller.currentTask;
+                      if (task == null) return const SizedBox.shrink();
+
+                      return Column(
+                        children: [
+                          const SizedBox(height: 20),
+                          Divider(
+                            color: colorScheme.outlineVariant.withValues(alpha: 0.3),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4, bottom: 12),
+                            child: Text(
+                              'Ações da Tarefa',
+                              style: textTheme.labelMedium?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ),
+
+                          // Botão "Marcar como Fazendo"
+                          if (task.status == TaskStatus.todo)
+                            SizedBox(
+                              width: double.infinity,
+                              child: FilledButton.tonalIcon(
+                                onPressed: () async {
+                                  HapticFeedback.mediumImpact();
+                                  final success = await controller
+                                      .updateTaskStatus(TaskStatus.doing);
+                                  if (context.mounted) {
+                                    _showStatusSnackBar(
+                                      context,
+                                      success: success,
+                                      message: success
+                                          ? 'Tarefa movida para "Fazendo" ✨'
+                                          : 'Erro ao atualizar status',
+                                    );
+                                  }
+                                },
+                                icon: const Icon(Icons.timelapse_rounded),
+                                label: const Text('Marcar como Fazendo'),
+                                style: FilledButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                          if (task.status == TaskStatus.todo)
+                            const SizedBox(height: 10),
+
+                          // Botão "Concluir Tarefa"
+                          if (task.status != TaskStatus.done)
+                            SizedBox(
+                              width: double.infinity,
+                              child: FilledButton.icon(
+                                onPressed: () async {
+                                  HapticFeedback.heavyImpact();
+                                  final success = await controller
+                                      .updateTaskStatus(TaskStatus.done);
+                                  if (context.mounted) {
+                                    _showStatusSnackBar(
+                                      context,
+                                      success: success,
+                                      message: success
+                                          ? 'Tarefa concluída! 🎉'
+                                          : 'Erro ao concluir tarefa',
+                                    );
+                                  }
+                                },
+                                icon: const Icon(Icons.check_circle_rounded),
+                                label: const Text('Concluir Tarefa'),
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: Colors.green.shade600,
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                          // Indicador de tarefa já concluída
+                          if (task.status == TaskStatus.done)
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.green.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: Colors.green.withValues(alpha: 0.3),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.verified_rounded,
+                                    size: 20,
+                                    color: Colors.green.shade600,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Tarefa concluída',
+                                    style: textTheme.titleSmall?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.green.shade600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                        ],
+                      );
+                    },
                   ),
                 ],
               ),
