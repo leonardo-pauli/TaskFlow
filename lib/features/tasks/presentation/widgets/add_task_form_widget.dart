@@ -38,7 +38,7 @@ class _AddTaskFormWidgetState extends State<AddTaskFormWidget> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -47,13 +47,13 @@ class _AddTaskFormWidgetState extends State<AddTaskFormWidget> {
               controller: _titleController,
               decoration: InputDecoration(labelText: 'Titulo'),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextField(
               controller: _descriptionController,
               decoration: InputDecoration(labelText: 'Descrição'),
             ),
-            SizedBox(height: 16),
-            Text('Prioridade:'),
+            const SizedBox(height: 16),
+            const Text('Prioridade:'),
             Wrap(
               spacing: 8,
 
@@ -71,7 +71,7 @@ class _AddTaskFormWidgetState extends State<AddTaskFormWidget> {
                 );
               }).toList(),
             ),
-            SizedBox(height: 22),
+            const SizedBox(height: 22),
             ElevatedButton(
               onPressed: () {
                 if (_titleController.text.isEmpty) return;

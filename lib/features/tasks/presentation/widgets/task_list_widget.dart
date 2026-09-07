@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:taskflow/domain/task_entity.dart';
+import 'package:taskflow/features/tasks/presentation/pages/task_detail_page.dart';
 
 class TaskListWidget extends StatelessWidget {
   final List<TaskEntity> tasks;
@@ -19,7 +19,7 @@ class TaskListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (tasks.isEmpty) {
-      return Center(child: Text('Nenhuma tarefa por aqui!'));
+      return const Center(child: Text('Nenhuma tarefa por aqui!'));
     }
     return ListView.builder(
       itemBuilder: (context, index) {
@@ -29,7 +29,7 @@ class TaskListWidget extends StatelessWidget {
             color: Colors.blue,
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: const Icon(Icons.edit, color: Colors.white),
+            child: const Icon(Icons.edit, color: Colors.white),  // already const
           ),
           secondaryBackground: Container(
             color: Colors.red,
@@ -49,10 +49,18 @@ class TaskListWidget extends StatelessWidget {
           },
           key: ValueKey(task.id),
           child: ListTile(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TaskDetailPage(task: task),
+                ),
+              );
+            },
             title: Text(task.title),
             subtitle: Text(task.description),
             trailing: PopupMenuButton<TaskStatus>(
-              icon: Icon(Icons.swap_horiz, color: Colors.grey),
+              icon: const Icon(Icons.swap_horiz, color: Colors.grey),
               onSelected: (novoStatus) {
                 if (novoStatus != task.status) {
                   onChangeStatus(task, novoStatus);
